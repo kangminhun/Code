@@ -18,10 +18,16 @@ public class GoodsBuyCanvas : MonoBehaviour
     // 상품 구매 완료UI 정보변수
     public GameObject purchaseRequestCanvas;
     public GameObject purchaseCompleted_Canvas;
+    public RectTransform itemInformation_Camvas;
+    public RectTransform itemInformation_Vetor;
+    public RectTransform itemInformation_Origin;
     public Text purchaseCompleted_Text;
     // 상품 구매 실패UI
     public GameObject inputFailed_Number;
     public GameObject inputFailed_Money;
+
+    // 임시 스크립트
+    public BuyGoods buyGoods;
     private void OnEnable()
     {
         goodsImage.texture = item.goodsImage;
@@ -29,7 +35,7 @@ public class GoodsBuyCanvas : MonoBehaviour
         if (item.price != 0)
             goodsPriceText.text = GetThousandCommaText(item.price).ToString();
         else
-            goodsPriceText.text = "0";
+            goodsPriceText.text = "Free";
         Initialization();
     }
     public void Goods()
@@ -37,18 +43,20 @@ public class GoodsBuyCanvas : MonoBehaviour
         if (phoneNumber.text != "")
             phoneNumberInt = int.Parse(phoneNumber.text);
         // 구매
-        if (PointScore.instance.scoreValue >= item.price && phoneNumber.text.Length == 8)
+        if (PointScore.instance.scoreValue >= item.price && phoneNumber.text.Length == 11)
         {
             if (!inputFailed_Number.activeInHierarchy && !inputFailed_Money.activeInHierarchy)
             {
+                buyGoods.BuyItem();
                 purchaseRequestCanvas.SetActive(false);
                 purchaseCompleted_Canvas.SetActive(true);
-                purchaseCompleted_Text.text = $"{PhotonNetwork.NickName}님,{GetPhoneNumberText(phoneNumberInt)}번호로 아이템을 구매 했습니다";
+                itemInformation_Camvas.anchoredPosition = itemInformation_Vetor.anchoredPosition;
+                purchaseCompleted_Text.text = $"<b>{PhotonNetwork.NickName}</b>님,<b>{GetPhoneNumberText(phoneNumberInt)}</b>번호로 "+"\n"+"해당 상품 구매 신청이 완료되었습니다";
                 PointScore.instance.PointDown(item.price);
                 //구매 성공
             }
         }
-        else if (phoneNumber.text.Length != 8)
+        else if (phoneNumber.text.Length != 11)
             inputFailed_Number.SetActive(true);
            //번호이상으로 실패
         else
@@ -58,6 +66,7 @@ public class GoodsBuyCanvas : MonoBehaviour
     public void No()
     {
         gameObject.SetActive(false);
+        itemInformation_Camvas.anchoredPosition = itemInformation_Origin.anchoredPosition;
     }
     public void InputFailedCanvasOff()
     {
@@ -78,6 +87,6 @@ public class GoodsBuyCanvas : MonoBehaviour
     }
     public string GetPhoneNumberText(int data)
     {
-        return string.Format("{0:010-####-####}", data);
+        return string.Format("{0:0##-####-####}", data);
     }
 }

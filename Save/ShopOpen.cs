@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopButton : MonoBehaviour
+public class ShopOpen : MonoBehaviour
 {
     public GameObject shopCanvas;
     public Text pointText;
-    
-    public void ShopCanvasOn()
+    public CreateShopUI shopUI;
+    public Texture testImg;
+    public void Start()
     {
-        shopCanvas.SetActive(true);
+        List<GoodsDataStr> tempList = GoodsDataManager.Instance.GoodsList;
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            GoodsDataStr tempData = tempList[i];
+            shopUI.GoodsData(tempData.point, tempData.name, testImg);
+        }
     }
     public void ShopCanvasOff()
     {
         shopCanvas.SetActive(false);
+        PlayerAnimator.shop = false;
     }
     public void Update()
     {
